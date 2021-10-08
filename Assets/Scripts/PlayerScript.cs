@@ -36,6 +36,7 @@ public class PlayerScript : MonoBehaviour
     public void PlayerDeath()
     {
         //TODO
+        // This comment is a test to make sure I got the branches working
     }
 
     //Gav's Function's
