@@ -19,9 +19,12 @@ public class PlayerScript : MonoBehaviour
     // Player Things
     public SpriteRenderer avatar;
     private Rigidbody2D avatarBody;
+    private Collider2D avaterTouch;
     public float acceleration;
+    private float maxSpeed = 30;
     private Vector2 velocity;
     private int timeToDeath = -1;
+    private Vector2 startposition;
     // Hitboxes of Snake people do not include head
 
     private void Awake()
@@ -33,6 +36,7 @@ public class PlayerScript : MonoBehaviour
     void Start()
     {
         avatarBody = transform.GetComponent<Rigidbody2D>();
+        //avaterTouch = transform.GetComponent<Collider2D>();
     }
 
     private void FixedUpdate()
@@ -70,6 +74,18 @@ public class PlayerScript : MonoBehaviour
                 avatarBody.velocity = new Vector2(avatarBody.velocity.x, avatarBody.velocity.y + acceleration);
             }
         }
+        // Speed Cap
+        if (avatarBody.velocity.magnitude > maxSpeed)
+        {
+            // Debug.Log("Speeding: "+ avatarBody.velocity.magnitude);
+            float magnitude = avatarBody.velocity.magnitude;
+            float counterMagnitude = -1 * (magnitude - maxSpeed) / magnitude;
+            // Debug.Log("$$$$$$$$: " + counterMagnitude);
+            Vector2 counterVelocity = new Vector2(avatarBody.velocity.x * counterMagnitude, avatarBody.velocity.y * counterMagnitude);
+            avatarBody.velocity = new Vector2(avatarBody.velocity.x + counterVelocity.x, avatarBody.velocity.y + counterVelocity.y);
+            // Debug.Log("--------: " + avatarBody.velocity.magnitude);
+        }
+        // Natural Deceleration
         if ((!Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.A)) || isLight)
         {
             if (System.Math.Abs(avatarBody.velocity.x) < acceleration)
@@ -86,6 +102,8 @@ public class PlayerScript : MonoBehaviour
             }
         }
 
+        // Light Test Apparatus
+        /*
         if (avatarBody.velocity.magnitude > 30 || (avatarBody.velocity.magnitude < .1 && isLight))
         {
             LightSwap();
@@ -94,6 +112,8 @@ public class PlayerScript : MonoBehaviour
             else
                 cam.backgroundColor = new Color(0, 0, 0);
         }
+        */
+
         if (timeToDeath > 0)
         {
             Debug.Log(timeToDeath);
@@ -109,17 +129,28 @@ public class PlayerScript : MonoBehaviour
     {
         if (other.tag.Equals("Light"))
         {
+            Debug.Log(other.ToString());
             timeToDeath = 10;
         }
+        if (other.tag.Equals("Start"))
+        {
+            Debug.Log("Spawn point Saved");
+            startposition = other.transform.position;
+        }
     }
+
     private void OnTriggerExit2D(Collider2D other)
     {
-
+        if (other.tag.Equals("Start"))
+        {
+            Debug.Log("Spawn point Saved");
+            startposition = other.transform.position;
+        }
     }
 
     public void PlayerDeath()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        
     }
 
     //Gav's Function's
