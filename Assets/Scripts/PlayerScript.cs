@@ -15,13 +15,19 @@ public class PlayerScript : MonoBehaviour
      */
     private bool isLight;
 
+    // Level Transition
+    private bool transitioning = false;
+    private float transitionDelay;
+    private float transitionTimer;
+    private bool transitionClosing = true;
+    public SpriteRenderer leftCurtain;
+    public SpriteRenderer rightCurtain;
+
     // Player Things
     public SpriteRenderer avatar;
     private Rigidbody2D avatarBody;
-    private Collider2D avaterTouch;
     public float acceleration;
     public float maxSpeed;
-    private Vector2 velocity;
     private int timeToDeath = -1;
     private Vector2 startposition;
 
@@ -34,11 +40,50 @@ public class PlayerScript : MonoBehaviour
     void Start()
     {
         avatarBody = transform.GetComponent<Rigidbody2D>();
-        //avaterTouch = transform.GetComponent<Collider2D>();
+        startposition = GameObject.FindGameObjectWithTag("Start").transform.position;
+        avatar.transform.position = startposition;
     }
 
     private void FixedUpdate()
     {
+        // Transition Magic
+        if (transitioning)
+        {
+            if (transitionDelay > 0)
+            {
+                transitionDelay -= 1 / 60f;
+                Debug.Log("TransitionDelay: "+transitionDelay);
+            }
+            else
+            {
+                Debug.Log("TransitionTimer: " + transitionTimer);
+                if (transitionClosing)
+                {
+                    transitionTimer -= 1 / 60f;
+                    if (transitionTimer <= 0)
+                    {
+                        isLight = false;
+                        transitioning = false;
+                    }
+                }
+                else
+                {
+                    transitionTimer += 1 / 60f;
+                    if (transitionTimer >= 1)
+                    {
+                        transitionClosing = true;
+                        //Scene scene = SceneManager.GetSceneByName("MasonTestScene2");
+                        // SceneManager.LoadScene("MasonTestScene2");
+                        startposition = GameObject.FindGameObjectWithTag("Start").transform.position;
+                        avatar.transform.position = startposition;
+                        avatarBody.velocity = new Vector2(0, 0);
+                    }
+                }
+                leftCurtain.transform.localScale = new Vector3(100 * transitionTimer, 51, 1);
+                rightCurtain.transform.localScale = new Vector3(100 * transitionTimer, 51, 1);
+            }
+        }
+
         // Player Acceleration
         if (Input.GetKey(KeyCode.W) && !isLight)
         {
@@ -100,18 +145,6 @@ public class PlayerScript : MonoBehaviour
             }
         }
 
-        // Light Test Apparatus
-        /*
-        if (avatarBody.velocity.magnitude > 30 || (avatarBody.velocity.magnitude < .1 && isLight))
-        {
-            LightSwap();
-            if (isLight)
-                Camera.getCurrent().backgroundColor = new Color(254,254,254); 
-            else
-                Camera.getCurrent().backgroundColor = new Color(0, 0, 0);
-        }
-        */
-
         if (timeToDeath > 0)
         {
             Debug.Log(timeToDeath);
@@ -128,11 +161,20 @@ public class PlayerScript : MonoBehaviour
         if (other.tag.Equals("Light"))
         {
             Debug.Log(other.ToString());
-            timeToDeath = 100;
+            timeToDeath = 60;
         }
         if (other.tag.Equals("Start"))
         {
             startposition = other.transform.position;
+        }
+        if (other.tag.Equals("Level Complete"))
+        {
+            // Transition Sequence Begins
+            transitioning = true;
+            transitionTimer = 0;
+            transitionClosing = false;
+            transitionDelay = 1f;
+            isLight = true;
         }
     }
 
@@ -147,6 +189,8 @@ public class PlayerScript : MonoBehaviour
     public void PlayerDeath()
     {
         avatar.transform.position = startposition;
+        avatarBody.velocity = new Vector2(0, 0);
+        // Light on second
     }
 
     //Gav's Function's

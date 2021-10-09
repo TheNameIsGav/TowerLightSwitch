@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Light
   - Start
+  - Level Complete
   layers:
   - Default
   - TransparentFX
