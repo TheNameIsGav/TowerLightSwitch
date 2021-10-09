@@ -7,8 +7,12 @@ public class PlayerScript : MonoBehaviour
 
     //Publics
     public static PlayerScript instance;
+    public Camera cam;
 
     //Privates
+    /*
+     * The boolean determines whether the map is being lit up
+     */
     private bool isLight;
 
     // Player Things
@@ -31,43 +35,40 @@ public class PlayerScript : MonoBehaviour
 
     private void FixedUpdate()
     {
-        bool accelerated = false;
-        if (Input.GetKey(KeyCode.W))
+        // Player Acceleration
+        if (Input.GetKey(KeyCode.W) && !isLight)
         {
             avatarBody.velocity = new Vector2(avatarBody.velocity.x, avatarBody.velocity.y + acceleration);
-            accelerated = true;
         }
-        if (Input.GetKey(KeyCode.S))
+        if (Input.GetKey(KeyCode.S) && !isLight)
         {
             avatarBody.velocity = new Vector2(avatarBody.velocity.x, avatarBody.velocity.y - acceleration);
-            accelerated = true;
         }
-        if (!Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.S))
+        if (Input.GetKey(KeyCode.D) && !isLight)
+        {
+            avatarBody.velocity = new Vector2(avatarBody.velocity.x + acceleration, avatarBody.velocity.y);
+        }
+        if (Input.GetKey(KeyCode.A) && !isLight)
+        {
+            avatarBody.velocity = new Vector2(avatarBody.velocity.x - acceleration, avatarBody.velocity.y);
+        }
+        // Player Deceleration
+        if ((!Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.S)) || isLight)
         {
             if (System.Math.Abs(avatarBody.velocity.y) < acceleration)
             {
                 avatarBody.velocity = new Vector2(avatarBody.velocity.x, 0);
-            } else if (avatarBody.velocity.y > 0)
+            }
+            else if (avatarBody.velocity.y > 0)
             {
                 avatarBody.velocity = new Vector2(avatarBody.velocity.x, avatarBody.velocity.y - acceleration);
-            } else
+            }
+            else
             {
                 avatarBody.velocity = new Vector2(avatarBody.velocity.x, avatarBody.velocity.y + acceleration);
             }
         }
-
-        accelerated = false;
-        if (Input.GetKey(KeyCode.D))
-        {
-            avatarBody.velocity = new Vector2(avatarBody.velocity.x + acceleration, avatarBody.velocity.y);
-            accelerated = true;
-        }
-        if (Input.GetKey(KeyCode.A))
-        {
-            avatarBody.velocity = new Vector2(avatarBody.velocity.x - acceleration, avatarBody.velocity.y);
-            accelerated = true;
-        }
-        if (!Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.A))
+        if ((!Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.A)) || isLight)
         {
             if (System.Math.Abs(avatarBody.velocity.x) < acceleration)
             {
@@ -82,7 +83,19 @@ public class PlayerScript : MonoBehaviour
                 avatarBody.velocity = new Vector2(avatarBody.velocity.x + acceleration, avatarBody.velocity.y);
             }
         }
+
+        if (avatarBody.velocity.magnitude > 30 || (avatarBody.velocity.magnitude < .1 && isLight))
+        {
+            Debug.Log("Lights! " + isLight);
+            LightSwap();
+            if (isLight)
+                cam.backgroundColor = new Color(254,254,254); 
+            else
+                cam.backgroundColor = new Color(0, 0, 0);
+        }
     }
+
+
 
     public void PlayerDeath()
     {
