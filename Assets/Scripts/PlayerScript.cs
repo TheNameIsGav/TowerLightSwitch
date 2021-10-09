@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerScript : MonoBehaviour
 {
@@ -20,6 +21,7 @@ public class PlayerScript : MonoBehaviour
     private Rigidbody2D avatarBody;
     public float acceleration;
     private Vector2 velocity;
+    private int timeToDeath = 150;
     // Hitboxes of Snake people do not include head
 
     private void Awake()
@@ -86,21 +88,38 @@ public class PlayerScript : MonoBehaviour
 
         if (avatarBody.velocity.magnitude > 30 || (avatarBody.velocity.magnitude < .1 && isLight))
         {
-            Debug.Log("Lights! " + isLight);
             LightSwap();
             if (isLight)
                 cam.backgroundColor = new Color(254,254,254); 
             else
                 cam.backgroundColor = new Color(0, 0, 0);
         }
+        if (timeToDeath > 0)
+        {
+            Debug.Log(timeToDeath);
+            timeToDeath--;
+            if (timeToDeath <= 0)
+            {
+                PlayerDeath();
+            }
+        }
     }
 
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.tag.Equals("Light"))
+        {
+            timeToDeath = 10;
+        }
+    }
+    private void OnTriggerExit2D(Collider2D other)
+    {
 
+    }
 
     public void PlayerDeath()
     {
-        //TODO
-        // This comment is a test to make sure I got the branches working
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     //Gav's Function's
