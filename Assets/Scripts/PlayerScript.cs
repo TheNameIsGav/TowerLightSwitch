@@ -130,11 +130,10 @@ public class PlayerScript : MonoBehaviour
         if (other.tag.Equals("Light"))
         {
             Debug.Log(other.ToString());
-            timeToDeath = 10;
+            timeToDeath = 100;
         }
         if (other.tag.Equals("Start"))
         {
-            Debug.Log("Spawn point Saved");
             startposition = other.transform.position;
         }
     }
@@ -143,14 +142,13 @@ public class PlayerScript : MonoBehaviour
     {
         if (other.tag.Equals("Start"))
         {
-            Debug.Log("Spawn point Saved");
             startposition = other.transform.position;
         }
     }
 
     public void PlayerDeath()
     {
-        
+        avatar.transform.position = startposition;
     }
 
     //Gav's Function's
