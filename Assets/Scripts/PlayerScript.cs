@@ -8,7 +8,6 @@ public class PlayerScript : MonoBehaviour
 
     //Publics
     public static PlayerScript instance;
-    public Camera cam;
 
     //Privates
     /*
@@ -21,11 +20,10 @@ public class PlayerScript : MonoBehaviour
     private Rigidbody2D avatarBody;
     private Collider2D avaterTouch;
     public float acceleration;
-    private float maxSpeed = 30;
+    public float maxSpeed;
     private Vector2 velocity;
     private int timeToDeath = -1;
     private Vector2 startposition;
-    // Hitboxes of Snake people do not include head
 
     private void Awake()
     {
@@ -108,9 +106,9 @@ public class PlayerScript : MonoBehaviour
         {
             LightSwap();
             if (isLight)
-                cam.backgroundColor = new Color(254,254,254); 
+                Camera.getCurrent().backgroundColor = new Color(254,254,254); 
             else
-                cam.backgroundColor = new Color(0, 0, 0);
+                Camera.getCurrent().backgroundColor = new Color(0, 0, 0);
         }
         */
 
