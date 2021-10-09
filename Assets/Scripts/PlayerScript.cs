@@ -21,7 +21,7 @@ public class PlayerScript : MonoBehaviour
     private Rigidbody2D avatarBody;
     public float acceleration;
     private Vector2 velocity;
-    private int timeToDeath = 150;
+    private int timeToDeath = -1;
     // Hitboxes of Snake people do not include head
 
     private void Awake()
