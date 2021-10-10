@@ -42,6 +42,16 @@ public class PlayerScript : MonoBehaviour
         avatarBody = transform.GetComponent<Rigidbody2D>();
     }
 
+    public bool isDying()
+    {
+        return timeToDeath > 0;
+    }
+
+    private bool cantMove()
+    {
+        return isLight || isDying();
+    }
+
     private void FixedUpdate()
     {
         if (transitioning)
@@ -94,37 +104,21 @@ public class PlayerScript : MonoBehaviour
     private void movePlayer()
     {
         // Player Acceleration
-        if (Input.GetKey(KeyCode.W) && !isLight)
+        if (Input.GetKey(KeyCode.W) && !cantMove())
         {
             avatarBody.velocity = new Vector2(avatarBody.velocity.x, avatarBody.velocity.y + acceleration);
         }
-        if (Input.GetKey(KeyCode.S) && !isLight)
+        if (Input.GetKey(KeyCode.S) && !cantMove())
         {
             avatarBody.velocity = new Vector2(avatarBody.velocity.x, avatarBody.velocity.y - acceleration);
         }
-        if (Input.GetKey(KeyCode.D) && !isLight)
+        if (Input.GetKey(KeyCode.D) && !cantMove())
         {
             avatarBody.velocity = new Vector2(avatarBody.velocity.x + acceleration, avatarBody.velocity.y);
         }
-        if (Input.GetKey(KeyCode.A) && !isLight)
+        if (Input.GetKey(KeyCode.A) && !cantMove())
         {
             avatarBody.velocity = new Vector2(avatarBody.velocity.x - acceleration, avatarBody.velocity.y);
-        }
-        // Player Deceleration
-        if ((!Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.S)) || isLight)
-        {
-            if (System.Math.Abs(avatarBody.velocity.y) < acceleration)
-            {
-                avatarBody.velocity = new Vector2(avatarBody.velocity.x, 0);
-            }
-            else if (avatarBody.velocity.y > 0)
-            {
-                avatarBody.velocity = new Vector2(avatarBody.velocity.x, avatarBody.velocity.y - acceleration);
-            }
-            else
-            {
-                avatarBody.velocity = new Vector2(avatarBody.velocity.x, avatarBody.velocity.y + acceleration);
-            }
         }
         // Speed Cap
         if (avatarBody.velocity.magnitude > maxSpeed)
@@ -135,7 +129,8 @@ public class PlayerScript : MonoBehaviour
             avatarBody.velocity = new Vector2(avatarBody.velocity.x + counterVelocity.x, avatarBody.velocity.y + counterVelocity.y);
         }
         // Natural Deceleration
-        if ((!Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.A)) || isLight)
+        // Horizontally
+        if ((!Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.A)) || cantMove())
         {
             if (System.Math.Abs(avatarBody.velocity.x) < acceleration)
             {
@@ -150,10 +145,25 @@ public class PlayerScript : MonoBehaviour
                 avatarBody.velocity = new Vector2(avatarBody.velocity.x + acceleration, avatarBody.velocity.y);
             }
         }
-
-        if (timeToDeath > 0)
+        // Vertically
+        if ((!Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.S)) || cantMove())
         {
-            Debug.Log(timeToDeath);
+            if (System.Math.Abs(avatarBody.velocity.y) < acceleration)
+            {
+                avatarBody.velocity = new Vector2(avatarBody.velocity.x, 0);
+            }
+            else if (avatarBody.velocity.y > 0)
+            {
+                avatarBody.velocity = new Vector2(avatarBody.velocity.x, avatarBody.velocity.y - acceleration);
+            }
+            else
+            {
+                avatarBody.velocity = new Vector2(avatarBody.velocity.x, avatarBody.velocity.y + acceleration);
+            }
+        }
+
+        if (isDying())
+        {
             timeToDeath--;
             if (timeToDeath <= 0)
             {
@@ -170,25 +180,31 @@ public class PlayerScript : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.tag.Equals("Light"))
+        if (other.tag.Equals("Light") && !transitioning && !isDying())
         {
-            Debug.Log(other.ToString());
             timeToDeath = 60;
         }
+        /*
+        // Still Necessary? I don't think so...
         if (other.tag.Equals("Start"))
         {
+            // Resetting the start position to the spawn whenever the player comes into contact
             startposition = other.transform.position;
         }
-        if (other.tag.Equals("Level Complete"))
+        */
+        if (other.tag.Equals("Level Complete") && !isDying())
         {
-            // Transition Sequence Begins
-            Debug.Log("Level Comlete!");
-            transitioning = true;
-            transitionTimer = 0;
-            transitionClosing = false;
-            transitionDelay = 1f;
-            isLight = true;
+            startTransition();
         }
+    }
+
+    private void startTransition()
+    {
+        transitioning = true;
+        transitionTimer = 0;
+        transitionClosing = false;
+        transitionDelay = 1f;
+        isLight = true;
     }
 
     private void OnTriggerExit2D(Collider2D other)
