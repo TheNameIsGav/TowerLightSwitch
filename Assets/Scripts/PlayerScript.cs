@@ -138,7 +138,7 @@ public class PlayerScript : MonoBehaviour
             SceneManager.LoadScene("Level " + currLevel);
             lightScore = 0;
         }
-        else { SceneManager.LoadScene("GameOver"); }
+        else { SceneManager.LoadScene("GameOver"); isLight = true; }
     }
 
     /// <summary>

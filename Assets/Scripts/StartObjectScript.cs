@@ -10,5 +10,4 @@ public class StartObjectScript : MonoBehaviour
         PlayerScript.instance.newStartPosition(transform.position);
         GameUI.instance.NewPar(par);
     }
-
 }
