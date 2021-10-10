@@ -84,8 +84,6 @@ public class PlayerScript : MonoBehaviour
     /// </summary>
     private void transition()
     {
-        leftCurtain.gameObject.SetActive(true);
-        rightCurtain.gameObject.SetActive(true);
         // Transition Magic
         if (transitionDelay > 0)
         {
@@ -100,6 +98,8 @@ public class PlayerScript : MonoBehaviour
                 {
                     isLight = false;
                     transitioning = false;
+                    leftCurtain.gameObject.SetActive(false);
+                    rightCurtain.gameObject.SetActive(false);
                 }
             }
             else
@@ -112,12 +112,10 @@ public class PlayerScript : MonoBehaviour
                     avatarBody.velocity = new Vector2(0, 0);
                 }
             }
-            leftCurtain.transform.localScale = new Vector3(100 * transitionTimer, 51, 1);
-            rightCurtain.transform.localScale = new Vector3(100 * transitionTimer, 51, 1);
+            leftCurtain.transform.localScale = new Vector3(60 * transitionTimer, 51, 1);
+            rightCurtain.transform.localScale = new Vector3(60 * transitionTimer, 51, 1);
         }
 
-        leftCurtain.gameObject.SetActive(false);
-        rightCurtain.gameObject.SetActive(false);
     }
 
     /// <summary>
@@ -273,6 +271,10 @@ public class PlayerScript : MonoBehaviour
         transitionClosing = false;
         transitionDelay = 1f;
         isLight = true;
+        leftCurtain.gameObject.SetActive(true);
+        rightCurtain.gameObject.SetActive(true);
+        leftCurtain.transform.position = new Vector2(-30, 0);
+        rightCurtain.transform.position = new Vector2(30, 0);
     }
 
     //Gav's Function's
