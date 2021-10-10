@@ -147,19 +147,19 @@ public class PlayerScript : MonoBehaviour
     private void movePlayer()
     {
         // Player Acceleration
-        if (Input.GetKey(KeyCode.W) && !cantMove())
+        if ((Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow)) && !cantMove())
         {
             avatarBody.velocity = new Vector2(avatarBody.velocity.x, avatarBody.velocity.y + acceleration);
         }
-        if (Input.GetKey(KeyCode.S) && !cantMove())
+        if ((Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow)) && !cantMove())
         {
             avatarBody.velocity = new Vector2(avatarBody.velocity.x, avatarBody.velocity.y - acceleration);
         }
-        if (Input.GetKey(KeyCode.D) && !cantMove())
+        if ((Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) && !cantMove())
         {
             avatarBody.velocity = new Vector2(avatarBody.velocity.x + acceleration, avatarBody.velocity.y);
         }
-        if (Input.GetKey(KeyCode.A) && !cantMove())
+        if ((Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) && !cantMove())
         {
             avatarBody.velocity = new Vector2(avatarBody.velocity.x - acceleration, avatarBody.velocity.y);
         }
@@ -173,7 +173,9 @@ public class PlayerScript : MonoBehaviour
         }
         // Natural Deceleration
         // Horizontally
-        if ((!Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.A)) || cantMove())
+        if ((!(Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
+            && !(Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))) 
+            || cantMove())
         {
             if (System.Math.Abs(avatarBody.velocity.x) < acceleration)
             {
@@ -189,7 +191,9 @@ public class PlayerScript : MonoBehaviour
             }
         }
         // Vertically
-        if ((!Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.S)) || cantMove())
+        if ((!(Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow)) 
+            && !(Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))) 
+            || cantMove())
         {
             if (System.Math.Abs(avatarBody.velocity.y) < acceleration)
             {
