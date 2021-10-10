@@ -210,6 +210,7 @@ public class PlayerScript : MonoBehaviour
             timeToDeath--;
             if (timeToDeath <= 0)
             {
+                avatar.color = new Color(255, 255, 255);
                 PlayerDeath();
             }
         }
@@ -238,6 +239,7 @@ public class PlayerScript : MonoBehaviour
         if (!cantMove())
         {
             timeToDeath = 10;
+            avatar.color = new Color(255,0,0);
         }
     }
 
