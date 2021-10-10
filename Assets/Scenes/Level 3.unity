@@ -5660,11 +5660,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 8920825913956429472, guid: 858f395d3e74c2a4fa5e63136580bf79, type: 3}
       propertyPath: ARotatePoint.z
-      value: 0
+      value: 0.25
       objectReference: {fileID: 0}
     - target: {fileID: 8920825913956429472, guid: 858f395d3e74c2a4fa5e63136580bf79, type: 3}
       propertyPath: BRotatePoint.w
-      value: -1
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8920825913956429472, guid: 858f395d3e74c2a4fa5e63136580bf79, type: 3}
       propertyPath: BRotatePoint.x
@@ -5676,7 +5676,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8920825913956429472, guid: 858f395d3e74c2a4fa5e63136580bf79, type: 3}
       propertyPath: BRotatePoint.z
-      value: 6
+      value: 1.25
       objectReference: {fileID: 0}
     - target: {fileID: 8920825913956429473, guid: 858f395d3e74c2a4fa5e63136580bf79, type: 3}
       propertyPath: m_RootOrder
