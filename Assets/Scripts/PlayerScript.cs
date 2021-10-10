@@ -40,50 +40,59 @@ public class PlayerScript : MonoBehaviour
     void Start()
     {
         avatarBody = transform.GetComponent<Rigidbody2D>();
-        startposition = GameObject.FindGameObjectWithTag("Start").transform.position;
-        avatar.transform.position = startposition;
     }
 
     private void FixedUpdate()
     {
-        // Transition Magic
         if (transitioning)
+            transition();
+        movePlayer();
+    }
+
+    private void transition()
+    {
+        // Transition Magic
+        if (transitionDelay > 0)
         {
-            if (transitionDelay > 0)
+            transitionDelay -= 1 / 60f;
+        }
+        else
+        {
+            if (transitionClosing)
             {
-                transitionDelay -= 1 / 60f;
-                Debug.Log("TransitionDelay: "+transitionDelay);
+                transitionTimer -= 1 / 60f;
+                if (transitionTimer <= 0)
+                {
+                    isLight = false;
+                    transitioning = false;
+                }
             }
             else
             {
-                Debug.Log("TransitionTimer: " + transitionTimer);
-                if (transitionClosing)
+                transitionTimer += 1 / 60f;
+                if (transitionTimer >= 1)
                 {
-                    transitionTimer -= 1 / 60f;
-                    if (transitionTimer <= 0)
-                    {
-                        isLight = false;
-                        transitioning = false;
-                    }
+                    transitionClosing = true;
+                    loadNextLevel();
+                    avatarBody.velocity = new Vector2(0, 0);
                 }
-                else
-                {
-                    transitionTimer += 1 / 60f;
-                    if (transitionTimer >= 1)
-                    {
-                        transitionClosing = true;
-                        //Scene scene = SceneManager.GetSceneByName("MasonTestScene2");
-                        // SceneManager.LoadScene("MasonTestScene2");
-                        startposition = GameObject.FindGameObjectWithTag("Start").transform.position;
-                        avatar.transform.position = startposition;
-                        avatarBody.velocity = new Vector2(0, 0);
-                    }
-                }
-                leftCurtain.transform.localScale = new Vector3(100 * transitionTimer, 51, 1);
-                rightCurtain.transform.localScale = new Vector3(100 * transitionTimer, 51, 1);
             }
+            leftCurtain.transform.localScale = new Vector3(100 * transitionTimer, 51, 1);
+            rightCurtain.transform.localScale = new Vector3(100 * transitionTimer, 51, 1);
         }
+    }
 
+    private void loadNextLevel()
+    {
+        // Temporary Scene Change for now
+        if (SceneManager.GetActiveScene().name.Equals("MasonTestScene2"))
+            SceneManager.LoadScene("MasonTestScene");
+        else
+            SceneManager.LoadScene("MasonTestScene2");
+    }
+
+    private void movePlayer()
+    {
         // Player Acceleration
         if (Input.GetKey(KeyCode.W) && !isLight)
         {
@@ -120,13 +129,10 @@ public class PlayerScript : MonoBehaviour
         // Speed Cap
         if (avatarBody.velocity.magnitude > maxSpeed)
         {
-            // Debug.Log("Speeding: "+ avatarBody.velocity.magnitude);
             float magnitude = avatarBody.velocity.magnitude;
             float counterMagnitude = -1 * (magnitude - maxSpeed) / magnitude;
-            // Debug.Log("$$$$$$$$: " + counterMagnitude);
             Vector2 counterVelocity = new Vector2(avatarBody.velocity.x * counterMagnitude, avatarBody.velocity.y * counterMagnitude);
             avatarBody.velocity = new Vector2(avatarBody.velocity.x + counterVelocity.x, avatarBody.velocity.y + counterVelocity.y);
-            // Debug.Log("--------: " + avatarBody.velocity.magnitude);
         }
         // Natural Deceleration
         if ((!Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.A)) || isLight)
@@ -156,6 +162,12 @@ public class PlayerScript : MonoBehaviour
         }
     }
 
+    public void newStartPosition(Vector2 position)
+    {
+        startposition = position;
+        avatar.transform.position = startposition;
+    }
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.tag.Equals("Light"))
@@ -170,6 +182,7 @@ public class PlayerScript : MonoBehaviour
         if (other.tag.Equals("Level Complete"))
         {
             // Transition Sequence Begins
+            Debug.Log("Level Comlete!");
             transitioning = true;
             transitionTimer = 0;
             transitionClosing = false;
@@ -180,17 +193,14 @@ public class PlayerScript : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        if (other.tag.Equals("Start"))
-        {
-            startposition = other.transform.position;
-        }
+        // Empty for now
     }
 
     public void PlayerDeath()
     {
         avatar.transform.position = startposition;
         avatarBody.velocity = new Vector2(0, 0);
-        // Light on second
+        // Light on for a second maybe?
     }
 
     //Gav's Function's
