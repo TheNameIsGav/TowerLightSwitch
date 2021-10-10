@@ -216,6 +216,7 @@ public class PlayerScript : MonoBehaviour
     {
         avatar.transform.position = startposition;
         avatarBody.velocity = new Vector2(0, 0);
+        timeToDeath = -1;
         // Light on for a second maybe?
     }
 
