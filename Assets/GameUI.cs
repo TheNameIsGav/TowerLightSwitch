@@ -13,10 +13,15 @@ public class GameUI : MonoBehaviour
     //public Text light_switch_text;
 
     // Update is called once per frame
+
+    private void Awake()
+    {
+        DontDestroyOnLoad(this);
+    }
     void Update()
     {
         par_main_text.text = "Par: " + par;
-        light_switch_text.text = "Light Switches: " + light_switches;
+        light_switch_text.text = "Light Switches: ";
         light_switches += 1;
     }
 }
