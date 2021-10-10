@@ -68,7 +68,7 @@ public class PlayerScript : MonoBehaviour
     /// </summary>
     private bool cantMove()
     {
-        return isLight || isDying();
+        return isLight || isDying() || transitioning;
     }
 
     /// <summary>
