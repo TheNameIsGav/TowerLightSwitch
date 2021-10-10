@@ -113,6 +113,7 @@ public class PlayerScript : MonoBehaviour
                 {
                     transitionClosing = true;
                     loadNextLevel();
+                    isLight = false;
                     avatarBody.velocity = new Vector2(0, 0);
                 }
             }
