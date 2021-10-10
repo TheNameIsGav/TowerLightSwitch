@@ -6,8 +6,9 @@ using TMPro;
 
 public class GameUI : MonoBehaviour
 {
+    public static GameUI instance;
     private int light_switches;
-    private int par = 4;
+    private int par = 1;
     public TextMeshProUGUI light_switch_text;
     public TextMeshProUGUI par_main_text;
     //public Text light_switch_text;
@@ -16,6 +17,7 @@ public class GameUI : MonoBehaviour
 
     private void Awake()
     {
+        instance = this;
         DontDestroyOnLoad(this);
     }
     void Update()
@@ -23,5 +25,9 @@ public class GameUI : MonoBehaviour
         par_main_text.text = "Par: " + par;
         light_switch_text.text = "Light Switches: " + PlayerScript.instance.lightScore;
         light_switches += 1;
+    }
+    public void NewPar(int nPar)
+    {
+        par = nPar;
     }
 }
