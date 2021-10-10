@@ -7,51 +7,105 @@ public class PlayerScript : MonoBehaviour
 {
 
     //Publics
+    /// <summary>
+    /// Making the player a singleton.
+    /// </summary>
     public static PlayerScript instance;
 
     //Privates
-    /*
-     * The boolean determines whether the map is being lit up
-     */
+    /// <summary>
+    /// The boolean determines whether the map is being lit up.
+    /// </summary>
     private bool isLight;
 
     // Level Transition
+    /// <summary>
+    /// Boolean for whether or not a transition is happening.
+    /// </summary>
     private bool transitioning = false;
+    /// <summary>
+    /// Time until the curtains close.
+    /// </summary>
     private float transitionDelay;
+    /// <summary>
+    /// Duration/transition of curtains and time progressing.
+    /// </summary>
     private float transitionTimer;
+    /// <summary>
+    /// Boolean controlling whether the curtains are closing (true) or opening (false).
+    /// </summary>
     private bool transitionClosing = true;
+    /// <summary>
+    /// Access to the left curtain
+    /// </summary>
     public SpriteRenderer leftCurtain;
+    /// <summary>
+    /// Access to the right curtain
+    /// </summary>
     public SpriteRenderer rightCurtain;
 
     // Player Things
+    /// <summary>
+    /// The sprite of the avatar
+    /// </summary>
     public SpriteRenderer avatar;
+    /// <summary>
+    /// The rigibody for the player, most utilized for the velocity.
+    /// </summary>
     private Rigidbody2D avatarBody;
+    /// <summary>
+    /// How much the player accelerates
+    /// </summary>
     public float acceleration;
+    /// <summary>
+    /// Maximum speed the player can move
+    /// </summary>
     public float maxSpeed;
+    /// <summary>
+    /// Timer until death, giving time for soundbyte.
+    /// </summary>
     private int timeToDeath = -1;
+    /// <summary>
+    /// Vector Position where the player spawns and respawns
+    /// </summary>
     private Vector2 startposition;
 
+    /// <summary>
+    /// Makes the player immortal and transdimensional.
+    /// </summary>
     private void Awake()
     {
         instance = this;
         DontDestroyOnLoad(instance);
     }
 
+    /// <summary>
+    /// Start function. Gets the rigibody
+    /// </summary>
     void Start()
     {
         avatarBody = transform.GetComponent<Rigidbody2D>();
     }
 
+    /// <summary>
+    /// Checks if the player is dying via the death timer
+    /// </summary>
     public bool isDying()
     {
         return timeToDeath > 0;
     }
 
+    /// <summary>
+    /// Checks if the light is on or the player is dying, meaning that the player can't move.
+    /// </summary>
     private bool cantMove()
     {
         return isLight || isDying();
     }
 
+    /// <summary>
+    /// Updates the transition as necessary and moves the player
+    /// </summary>
     private void FixedUpdate()
     {
         if (transitioning)
@@ -59,6 +113,9 @@ public class PlayerScript : MonoBehaviour
         movePlayer();
     }
 
+    /// <summary>
+    /// Transition sequence updater, curtains, level loading, and other stuff
+    /// </summary>
     private void transition()
     {
         // Transition Magic
@@ -92,6 +149,9 @@ public class PlayerScript : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Unfinished function that loads the next level while transitioning, specifically once the curtains close
+    /// </summary>
     private void loadNextLevel()
     {
         // Temporary Scene Change for now
@@ -101,6 +161,9 @@ public class PlayerScript : MonoBehaviour
             SceneManager.LoadScene("MasonTestScene2");
     }
 
+    /// <summary>
+    /// Moves the player based off of the keys, and decelerates the player as necessary. 
+    /// </summary>
     private void movePlayer()
     {
         // Player Acceleration
@@ -172,32 +235,36 @@ public class PlayerScript : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// It sets the spawn position of the pllayer in the new level and moves her there. 
+    /// Called by the start tile upon activation.
+    /// </summary>
     public void newStartPosition(Vector2 position)
     {
         startposition = position;
         avatar.transform.position = startposition;
     }
 
+    /// <summary>
+    /// Where the colisions happen. 2 Possibilities: 
+    /// <para> 1. You touch a light. Death timer starts. </para>
+    /// <para> 2. You reach the level goal. The startTransition function is called. </para>
+    /// </summary>
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.tag.Equals("Light") && !transitioning && !isDying())
         {
             timeToDeath = 60;
         }
-        /*
-        // Still Necessary? I don't think so...
-        if (other.tag.Equals("Start"))
-        {
-            // Resetting the start position to the spawn whenever the player comes into contact
-            startposition = other.transform.position;
-        }
-        */
         if (other.tag.Equals("Level Complete") && !isDying())
         {
             startTransition();
         }
     }
 
+    /// <summary>
+    /// Starts the transition to the next level after the next level tile is collided with.
+    /// </summary>
     private void startTransition()
     {
         transitioning = true;
@@ -207,11 +274,9 @@ public class PlayerScript : MonoBehaviour
         isLight = true;
     }
 
-    private void OnTriggerExit2D(Collider2D other)
-    {
-        // Empty for now
-    }
-
+    /// <summary>
+    /// This is the function called to 'kill' the player and respawn it after the death timer hits zero
+    /// </summary>
     public void PlayerDeath()
     {
         avatar.transform.position = startposition;
