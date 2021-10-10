@@ -21,7 +21,7 @@ public class GameUI : MonoBehaviour
     void Update()
     {
         par_main_text.text = "Par: " + par;
-        light_switch_text.text = "Light Switches: ";
+        light_switch_text.text = "Light Switches: " + PlayerScript.instance.lightScore;
         light_switches += 1;
     }
 }

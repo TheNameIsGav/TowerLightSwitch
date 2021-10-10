@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerScript : MonoBehaviour
 {
@@ -8,24 +9,43 @@ public class PlayerScript : MonoBehaviour
     //Publics
     public static PlayerScript instance;
 
+    public SpriteRenderer leftCurtain;
+    public SpriteRenderer rightCurtain;
+    public SpriteRenderer avatar;
+
+    public int lightScore;
+
+    public float acceleration;
+    public float maxSpeed;
+
     //Privates
     private bool isLight;
+    private bool transitioning = false;
+    private bool transitionClosing = true;
+
     private Light areaLight;
-    private int lightScore;
 
-    // Player Things
-    public SpriteRenderer avatar;
     private Rigidbody2D avatarBody;
-    public float acceleration;
-    private Vector2 velocity;
-    // Hitboxes of Snake people do not include head
 
+    private Vector2 startposition;
+
+    private int timeToDeath = -1;
+
+    private float transitionDelay;
+    private float transitionTimer;
+
+    /// <summary>
+    /// Makes the player immortal and transdimensional.
+    /// </summary>
     private void Awake()
     {
         instance = this;
         DontDestroyOnLoad(instance);
     }
 
+    /// <summary>
+    /// Start function. Gets the rigibody
+    /// </summary>
     void Start()
     {
         avatarBody = transform.GetComponent<Rigidbody2D>();
@@ -33,45 +53,124 @@ public class PlayerScript : MonoBehaviour
         StartLightTimer();
     }
 
+    /// <summary>
+    /// Checks if the player is dying via the death timer
+    /// </summary>
+    public bool isDying()
+    {
+        return timeToDeath > 0;
+    }
+
+    /// <summary>
+    /// Checks if the light is on or the player is dying, meaning that the player can't move.
+    /// </summary>
+    private bool cantMove()
+    {
+        return isLight || isDying();
+    }
+
+    /// <summary>
+    /// Updates the transition as necessary and moves the player
+    /// </summary>
     private void FixedUpdate()
     {
-        bool accelerated = false;
-        if (Input.GetKey(KeyCode.W))
+        if (transitioning)
+            transition();
+        movePlayer();
+    }
+
+    /// <summary>
+    /// Transition sequence updater, curtains, level loading, and other stuff
+    /// </summary>
+    private void transition()
+    {
+        leftCurtain.gameObject.SetActive(true);
+        rightCurtain.gameObject.SetActive(true);
+        // Transition Magic
+        if (transitionDelay > 0)
         {
-            avatarBody.velocity = new Vector2(avatarBody.velocity.x, avatarBody.velocity.y + acceleration);
-            accelerated = true;
+            transitionDelay -= 1 / 60f;
         }
-        if (Input.GetKey(KeyCode.S))
+        else
         {
-            avatarBody.velocity = new Vector2(avatarBody.velocity.x, avatarBody.velocity.y - acceleration);
-            accelerated = true;
-        }
-        if (!Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.S))
-        {
-            if (System.Math.Abs(avatarBody.velocity.y) < acceleration)
+            if (transitionClosing)
             {
-                avatarBody.velocity = new Vector2(avatarBody.velocity.x, 0);
-            } else if (avatarBody.velocity.y > 0)
-            {
-                avatarBody.velocity = new Vector2(avatarBody.velocity.x, avatarBody.velocity.y - acceleration);
-            } else
-            {
-                avatarBody.velocity = new Vector2(avatarBody.velocity.x, avatarBody.velocity.y + acceleration);
+                transitionTimer -= 1 / 60f;
+                if (transitionTimer <= 0)
+                {
+                    isLight = false;
+                    transitioning = false;
+                }
             }
+            else
+            {
+                transitionTimer += 1 / 60f;
+                if (transitionTimer >= 1)
+                {
+                    transitionClosing = true;
+                    loadNextLevel();
+                    avatarBody.velocity = new Vector2(0, 0);
+                }
+            }
+            leftCurtain.transform.localScale = new Vector3(100 * transitionTimer, 51, 1);
+            rightCurtain.transform.localScale = new Vector3(100 * transitionTimer, 51, 1);
         }
 
-        accelerated = false;
-        if (Input.GetKey(KeyCode.D))
+        leftCurtain.gameObject.SetActive(false);
+        rightCurtain.gameObject.SetActive(false);
+    }
+
+    /// <summary>
+    /// loads the next level while transitioning, specifically once the curtains close
+    /// </summary>
+    private int currLevel = 1;
+    private void loadNextLevel()
+    {
+        if (currLevel < 10) {
+            if(lightScore < PlayerPrefs.GetInt("Level" + currLevel))
+            {
+                PlayerPrefs.SetInt("Level" + currLevel, lightScore);
+            }
+            currLevel++;
+            SceneManager.LoadScene("Level " + currLevel);
+            lightScore = 0;
+        }
+        else { SceneManager.LoadScene("GameOver"); }
+    }
+
+    /// <summary>
+    /// Moves the player based off of the keys, and decelerates the player as necessary. 
+    /// </summary>
+    private void movePlayer()
+    {
+        // Player Acceleration
+        if (Input.GetKey(KeyCode.W) && !cantMove())
+        {
+            avatarBody.velocity = new Vector2(avatarBody.velocity.x, avatarBody.velocity.y + acceleration);
+        }
+        if (Input.GetKey(KeyCode.S) && !cantMove())
+        {
+            avatarBody.velocity = new Vector2(avatarBody.velocity.x, avatarBody.velocity.y - acceleration);
+        }
+        if (Input.GetKey(KeyCode.D) && !cantMove())
         {
             avatarBody.velocity = new Vector2(avatarBody.velocity.x + acceleration, avatarBody.velocity.y);
-            accelerated = true;
         }
-        if (Input.GetKey(KeyCode.A))
+        if (Input.GetKey(KeyCode.A) && !cantMove())
         {
             avatarBody.velocity = new Vector2(avatarBody.velocity.x - acceleration, avatarBody.velocity.y);
-            accelerated = true;
         }
-        if (!Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.A))
+        // Speed Cap
+        if (avatarBody.velocity.magnitude > maxSpeed)
+        {
+            float magnitude = avatarBody.velocity.magnitude;
+            float counterMagnitude = -1 * (magnitude - maxSpeed) / magnitude;
+            Vector2 counterVelocity = new Vector2(avatarBody.velocity.x * counterMagnitude, avatarBody.velocity.y * counterMagnitude);
+            avatarBody.velocity = new Vector2(avatarBody.velocity.x + counterVelocity.x, avatarBody.velocity.y + counterVelocity.y);
+        }
+        // Natural Deceleration
+        // Horizontally
+        if ((!Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.A)) || cantMove())
         {
             if (System.Math.Abs(avatarBody.velocity.x) < acceleration)
             {
@@ -86,6 +185,31 @@ public class PlayerScript : MonoBehaviour
                 avatarBody.velocity = new Vector2(avatarBody.velocity.x + acceleration, avatarBody.velocity.y);
             }
         }
+        // Vertically
+        if ((!Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.S)) || cantMove())
+        {
+            if (System.Math.Abs(avatarBody.velocity.y) < acceleration)
+            {
+                avatarBody.velocity = new Vector2(avatarBody.velocity.x, 0);
+            }
+            else if (avatarBody.velocity.y > 0)
+            {
+                avatarBody.velocity = new Vector2(avatarBody.velocity.x, avatarBody.velocity.y - acceleration);
+            }
+            else
+            {
+                avatarBody.velocity = new Vector2(avatarBody.velocity.x, avatarBody.velocity.y + acceleration);
+            }
+        }
+
+        if (isDying())
+        {
+            timeToDeath--;
+            if (timeToDeath <= 0)
+            {
+                PlayerDeath();
+            }
+        }
     }
 
     private void Update()
@@ -94,11 +218,61 @@ public class PlayerScript : MonoBehaviour
         } else { areaLight.intensity = -1; }
     }
 
+    /// <summary>
+    /// This is the function called to 'kill' the player and respawn it after the death timer hits zero
+    /// </summary>
     public void PlayerDeath()
     {
-        //TODO
-        Debug.Log("Player Died");
-        // This comment is a test to make sure I got the branches working
+        avatar.transform.position = startposition;
+        avatarBody.velocity = new Vector2(0, 0);
+        timeToDeath = -1;
+        // Light on for a second maybe?
+    }
+    /// <summary>
+    /// It sets the spawn position of the pllayer in the new level and moves her there. 
+    /// Called by the start tile upon activation.
+    /// </summary>
+    public void newStartPosition(Vector2 position)
+    {
+        startposition = position;
+        avatar.transform.position = startposition;
+    }
+
+    /// <summary>
+    /// Where the colisions happen. 2 Possibilities: 
+    /// <para> 1. You touch a light. Death timer starts. </para>
+    /// <para> 2. You reach the level goal. The startTransition function is called. </para>
+    /// </summary>
+    /*private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.tag.Equals("Light") && !transitioning && !isDying())
+        {
+            
+        }
+        if (other.tag.Equals("Level Complete") && !isDying())
+        {
+            startTransition();
+        }
+    }*/
+
+    /// <summary>
+    /// Called by the EndObject to trigger the end of a level
+    /// </summary>
+    public void OnFinish()
+    {
+        startTransition();
+    }
+
+    /// <summary>
+    /// Starts the transition to the next level after the next level tile is collided with.
+    /// </summary>
+    private void startTransition()
+    {
+        transitioning = true;
+        transitionTimer = 0;
+        transitionClosing = false;
+        transitionDelay = 1f;
+        isLight = true;
     }
 
     //Gav's Function's
@@ -106,7 +280,7 @@ public class PlayerScript : MonoBehaviour
     /// <summary>
     /// Swaps the current state of Light
     /// </summary>
-    public void LightSwap() { isLight = !isLight; }
+    public void LightSwap() { isLight = !isLight; lightScore++; }
 
     /// <summary>
     /// Gets the current state of Light
