@@ -50,6 +50,8 @@ public class PlayerScript : MonoBehaviour
     {
         avatarBody = transform.GetComponent<Rigidbody2D>();
         areaLight = transform.GetComponent<Light>();
+        leftCurtain.gameObject.SetActive(false);
+        rightCurtain.gameObject.SetActive(false);
         StartLightTimer();
     }
 
@@ -100,6 +102,8 @@ public class PlayerScript : MonoBehaviour
                     transitioning = false;
                     leftCurtain.gameObject.SetActive(false);
                     rightCurtain.gameObject.SetActive(false);
+                    StopAllCoroutines();
+                    StartLightTimer();
                 }
             }
             else
@@ -270,6 +274,7 @@ public class PlayerScript : MonoBehaviour
         transitionTimer = 0;
         transitionClosing = false;
         transitionDelay = 1f;
+        StopCoroutine(iterateTime());
         isLight = true;
         leftCurtain.gameObject.SetActive(true);
         rightCurtain.gameObject.SetActive(true);
