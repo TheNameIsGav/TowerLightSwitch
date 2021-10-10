@@ -39,6 +39,6 @@ public class GuardScript : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.CompareTag("Player")) { PlayerScript.instance.PlayerDeath(); }
+        if (collision.gameObject.CompareTag("Player")) { PlayerScript.instance.startPlayerDeath(); }
     }
 }

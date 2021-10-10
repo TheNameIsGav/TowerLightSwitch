@@ -231,6 +231,16 @@ public class PlayerScript : MonoBehaviour
         timeToDeath = -1;
         // Light on for a second maybe?
     }
+
+    //
+    public void startPlayerDeath()
+    {
+        if (!cantMove())
+        {
+            timeToDeath = 10;
+        }
+    }
+
     /// <summary>
     /// It sets the spawn position of the pllayer in the new level and moves her there. 
     /// Called by the start tile upon activation.
