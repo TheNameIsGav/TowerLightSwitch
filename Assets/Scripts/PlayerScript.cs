@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+
 public class PlayerScript : MonoBehaviour
 {
 
     //Publics
+    public Animator animator;
     public static PlayerScript instance;
 
     public SpriteRenderer leftCurtain;
@@ -31,8 +33,12 @@ public class PlayerScript : MonoBehaviour
 
     private int timeToDeath = -1;
 
+    public int lightTime = 0;
+    public string lightText = "";
+
     private float transitionDelay;
     private float transitionTimer;
+    private int color = 0;
 
     /// <summary>
     /// Makes the player immortal and transdimensional.
@@ -52,7 +58,7 @@ public class PlayerScript : MonoBehaviour
         areaLight = transform.GetComponent<Light>();
         leftCurtain.gameObject.SetActive(false);
         rightCurtain.gameObject.SetActive(false);
-        StartLightTimer();
+        //StartLightTimer();
     }
 
     /// <summary>
@@ -79,6 +85,18 @@ public class PlayerScript : MonoBehaviour
         if (transitioning)
             transition();
         movePlayer();
+        animator.SetInteger("color", color);
+        animator.SetInteger("pSpeed", Mathf.Abs((int) avatarBody.velocity.magnitude));
+        Debug.Log((int)avatarBody.velocity.x);
+        if (((int)avatarBody.velocity.x) > 0){
+            avatar.flipX = false;
+        }
+        else
+        {
+            avatar.flipX = true;
+        }
+        //Debug.Log((int)avatarBody.velocity.magnitude);
+       
     }
 
     /// <summary>
@@ -304,7 +322,7 @@ public class PlayerScript : MonoBehaviour
     /// <summary>
     /// Swaps the current state of Light
     /// </summary>
-    public void LightSwap() { isLight = !isLight; lightScore++; }
+    public void LightSwap() { if (isLight) { lightScore++; } isLight = !isLight;  }
 
     /// <summary>
     /// Gets the current state of Light
@@ -314,17 +332,39 @@ public class PlayerScript : MonoBehaviour
     /// <summary>
     /// Function to handle the on and off of lights
     /// </summary>
-    void StartLightTimer()
+   public void StartLightTimer()
     {
         StartCoroutine(iterateTime());
     }
 
+    public void ColorUp()
+    {
+        color = ((color + 1) % 3);
+    }
+    public void ColorDown()
+    {
+        color = color - 1;
+        if (color < 0)
+        {
+            color = 2;
+        }
+    }
     IEnumerator iterateTime()
     {
         WaitForSeconds wait = new WaitForSeconds(1f);
         int count = isLight ? 5 : 10; //If we are light, then wait 5 seconds, if we are dark then wait 10 seconds
         for (int i = 0; i < count; i++)
         {
+            if (count == 5)
+            {
+                lightText = "Time Till Dark: ";
+                lightTime = 5 - i;
+            }
+            else
+            {
+                lightText = "Time Till Light: ";
+                lightTime = 10 - i;
+            }
             yield return wait;
         }
         LightSwap();

@@ -1,19 +1,19 @@
 fileFormatVersion: 2
-guid: f626e909e3c3d437187bc1aa5038e8b6
+guid: 7cb6752088f7103488eacd236bb80b23
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -8723279113828132097
-    second: jam_ghost_princess_green_0
+      213: -34722042789376542
+    second: jam ghost princess run purple dynamic_0
   - first:
-      213: 8879421258132879571
-    second: jam_ghost_princess_green_1
+      213: -7700189002132803192
+    second: jam ghost princess run purple dynamic_1
   - first:
-      213: 7525853785719741819
-    second: jam_ghost_princess_green_2
+      213: 4401737986261419907
+    second: jam ghost princess run purple dynamic_2
   - first:
-      213: 4334053927994364498
-    second: jam_ghost_princess_green_3
+      213: -8523511335146844896
+    second: jam ghost princess run purple dynamic_3
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -127,7 +127,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: jam_ghost_princess_green_0
+      name: jam ghost princess run purple dynamic_0
       rect:
         serializedVersion: 2
         x: 0
@@ -141,17 +141,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ffa90b72ddfa0f680800000000000000
-      internalID: -8723279113828132097
+      spriteID: 2edc9ad6c74a48ff0800000000000000
+      internalID: -34722042789376542
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: jam_ghost_princess_green_1
+      name: jam ghost princess run purple dynamic_1
       rect:
         serializedVersion: 2
-        x: 16
+        x: 17
         y: 0
         width: 16
         height: 24
@@ -162,19 +162,19 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 3d8ff0ec69a0a3b70800000000000000
-      internalID: 8879421258132879571
+      spriteID: 881318066ee632590800000000000000
+      internalID: -7700189002132803192
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: jam_ghost_princess_green_2
+      name: jam ghost princess run purple dynamic_2
       rect:
         serializedVersion: 2
-        x: 32
+        x: 33
         y: 0
-        width: 16
+        width: 15
         height: 24
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -183,19 +183,19 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b7d9a59f424317860800000000000000
-      internalID: 7525853785719741819
+      spriteID: 3878479806d161d30800000000000000
+      internalID: 4401737986261419907
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: jam_ghost_princess_green_3
+      name: jam ghost princess run purple dynamic_3
       rect:
         serializedVersion: 2
-        x: 48
+        x: 49
         y: 0
-        width: 16
+        width: 15
         height: 24
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -204,8 +204,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2529d7fa517a52c30800000000000000
-      internalID: 4334053927994364498
+      spriteID: 02d8e85a99766b980800000000000000
+      internalID: -8523511335146844896
       vertices: []
       indices: 
       edges: []

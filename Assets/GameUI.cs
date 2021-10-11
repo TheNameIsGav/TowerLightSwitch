@@ -11,6 +11,7 @@ public class GameUI : MonoBehaviour
     private int par = 1;
     public TextMeshProUGUI light_switch_text;
     public TextMeshProUGUI par_main_text;
+    public TextMeshProUGUI timeText;
     //public Text light_switch_text;
 
     // Update is called once per frame
@@ -25,6 +26,7 @@ public class GameUI : MonoBehaviour
         par_main_text.text = "Par: " + par;
         light_switch_text.text = "Light Switches: " + PlayerScript.instance.lightScore;
         light_switches += 1;
+        timeText.text = PlayerScript.instance.lightText + PlayerScript.instance.lightTime;
     }
     public void NewPar(int nPar)
     {
