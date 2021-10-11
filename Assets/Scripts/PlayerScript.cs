@@ -114,6 +114,7 @@ public class PlayerScript : MonoBehaviour
             if (transitionClosing)
             {
                 transitionTimer -= 1 / 60f;
+                isLight = false;
                 if (transitionTimer <= 0)
                 {
                     isLight = false;
