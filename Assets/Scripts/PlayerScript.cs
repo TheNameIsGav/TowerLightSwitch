@@ -38,6 +38,7 @@ public class PlayerScript : MonoBehaviour
 
     private float transitionDelay;
     private float transitionTimer;
+    public int currLevel = 1;
     private int color = 0;
 
     /// <summary>
@@ -46,7 +47,14 @@ public class PlayerScript : MonoBehaviour
     private void Awake()
     {
         instance = this;
-        DontDestroyOnLoad(instance);
+        if (SceneManager.GetActiveScene().name == "GameOver")
+        {
+
+        }
+        else
+        {
+            DontDestroyOnLoad(instance);
+        }
     }
 
     /// <summary>
@@ -87,7 +95,7 @@ public class PlayerScript : MonoBehaviour
         movePlayer();
         animator.SetInteger("color", color);
         animator.SetInteger("pSpeed", Mathf.Abs((int) avatarBody.velocity.magnitude));
-        Debug.Log((int)avatarBody.velocity.x);
+        //Debug.Log((int)avatarBody.velocity.x);
         if (((int)avatarBody.velocity.x) > 0){
             avatar.flipX = false;
         }
@@ -145,7 +153,6 @@ public class PlayerScript : MonoBehaviour
     /// <summary>
     /// loads the next level while transitioning, specifically once the curtains close
     /// </summary>
-    private int currLevel = 1;
     private void loadNextLevel()
     {
         if (currLevel < 10) {
@@ -341,6 +348,7 @@ public class PlayerScript : MonoBehaviour
     public void ColorUp()
     {
         color = ((color + 1) % 3);
+        Debug.Log("down");
     }
     public void ColorDown()
     {
@@ -349,6 +357,7 @@ public class PlayerScript : MonoBehaviour
         {
             color = 2;
         }
+        Debug.Log("up");
     }
     IEnumerator iterateTime()
     {
